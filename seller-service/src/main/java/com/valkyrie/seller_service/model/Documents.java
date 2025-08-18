@@ -3,8 +3,8 @@ package com.valkyrie.seller_service.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "image")
-public class Image {
+@Table(name = "document")
+public class Documents {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -19,23 +19,21 @@ public class Image {
 
     public byte[] getData() {return data;}
 
-    public Image setName(String name) {
+    public Documents setName(String name) {
         this.name = name;
         return this;
     }
 
-    public Image setType(String type) {
+    public Documents setType(String type) {
         this.type = type;
         return this;
     }
 
-    public Image setData(byte[] data) {
+    public Documents setData(byte[] data) {
         this.data = data;
         return this;
     }
 
     @Override
-    public String toString() {
-        return name + "." + type;
-    }
+    public String toString() {return name + "." + type;}
 }

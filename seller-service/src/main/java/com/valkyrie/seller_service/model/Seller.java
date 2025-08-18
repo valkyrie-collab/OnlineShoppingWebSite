@@ -3,6 +3,7 @@ package com.valkyrie.seller_service.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -10,40 +11,51 @@ import java.util.List;
 public class Seller {
     @Id
     private String id;
+    private String name;
     private String email;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private float contactNumber;
-    @ElementCollection
-    private List<String> productIds;
-    private int rating;
-    private LocalDate dob;
-    private LocalDate dateOfJoin;
-    @Embedded
+    private long phoneNumber;
+    private String address;
+    private String business;
+    private String gstNumber;
+    private Date registrationDate;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
+    private String bankAccountDetails;
+    private String status;
+    private int rating;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "document_id", referencedColumnName = "id")
+    private Documents documents;
+    private String description;
 
     public String getId() {return id;}
 
+    public String getName() {return name;}
+
     public String getEmail() {return email;}
 
-    public String getFirstName() {return firstName;}
+    public String getAddress() {return address;}
 
-    public String getMiddleName() {return middleName;}
+    public String getBusiness() {return business;}
 
-    public String getLastName() {return lastName;}
+    public String getGstNumber() {return gstNumber;}
 
-    public float getContactNumber() {return contactNumber;}
+    public String getBankAccountDetails() {return bankAccountDetails;}
 
-    public List<String> getProductIds() {return productIds;}
+    public String getStatus() {return status;}
+
+    public String getDescription() {return description;}
 
     public int getRating() {return rating;}
 
-    public LocalDate getDob() {return dob;}
-
-    public LocalDate getDateOfJoin() {return dateOfJoin;}
+    public long getPhoneNumber() {return phoneNumber;}
 
     public Image getImage() {return image;}
+
+    public Documents getDocuments() {return documents;}
+
+    public Date getRegistrationDate() {return registrationDate;}
 
     public Seller setId(String id) {
         this.id = id;
@@ -55,43 +67,33 @@ public class Seller {
         return this;
     }
 
-    public Seller setFirstName(String firstName) {
-        this.firstName = firstName;
+    public Seller setName(String name) {
+        this.name = name;
         return this;
     }
 
-    public Seller setMiddleName(String middleName) {
-        this.middleName = middleName;
+    public Seller setPhoneNumber(long phoneNumber) {
+        this.phoneNumber = phoneNumber;
         return this;
     }
 
-    public Seller setLastName(String lastName) {
-        this.lastName = lastName;
+    public Seller setBusiness(String business) {
+        this.business = business;
         return this;
     }
 
-    public Seller setContactNumber(float contactNumber) {
-        this.contactNumber = contactNumber;
+    public Seller setAddress(String address) {
+        this.address = address;
         return this;
     }
 
-    public Seller setProductIds(List<String> productIds) {
-        this.productIds = productIds;
+    public Seller setGstNumber(String gstNumber) {
+        this.gstNumber = gstNumber;
         return this;
     }
 
-    public Seller setRating(int rating) {
-        this.rating = rating;
-        return this;
-    }
-
-    public Seller setDob(LocalDate dob) {
-        this.dob = dob;
-        return this;
-    }
-
-    public Seller setDateOfJoin(LocalDate dateOfJoin) {
-        this.dateOfJoin = dateOfJoin;
+    public Seller setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
         return this;
     }
 
@@ -100,9 +102,35 @@ public class Seller {
         return this;
     }
 
+    public Seller setBankAccountDetails(String bankAccountDetails) {
+        this.bankAccountDetails = bankAccountDetails;
+        return this;
+    }
+
+    public Seller setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public Seller setRating(int rating) {
+        this.rating = rating;
+        return this;
+    }
+
+    public Seller setDocuments(Documents documents) {
+        this.documents = documents;
+        return this;
+    }
+
+    public Seller setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return id + email + firstName + middleName +
-                lastName + contactNumber + rating + dob + dateOfJoin;
+        return id + name + email + phoneNumber + address +
+                business + gstNumber + registrationDate + bankAccountDetails +
+                status + rating + description;
     }
 }

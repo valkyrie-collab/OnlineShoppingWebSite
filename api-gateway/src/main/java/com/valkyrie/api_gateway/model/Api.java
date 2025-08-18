@@ -73,7 +73,7 @@ public class Api {
                 )
         ).and(
                 post(
-                        "user", "/cart/**", "http://localhost:8085/"
+                        "authentication", "/user/**", "http://localhost:8085/"
                 )
         );
     }

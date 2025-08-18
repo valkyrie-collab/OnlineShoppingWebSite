@@ -1,13 +1,8 @@
-package com.valkyrie.seller_service.model;
+package com.valkyrie.product_service.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Lob;
 
-@Entity
-@Table(name = "image")
 public class Image {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private String name;
     private String type;
     @Lob
@@ -35,7 +30,5 @@ public class Image {
     }
 
     @Override
-    public String toString() {
-        return name + "." + type;
-    }
+    public String toString() {return name + "." + type;}
 }

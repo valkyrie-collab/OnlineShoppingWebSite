@@ -33,7 +33,7 @@ public class UserService {
     public Store<String> signIn(User user) {
 
         if (repo.findById(user.getUsername()).orElse(null) != null) {
-            return Store.initialize(HttpStatus.FOUND, "Plz log in");
+            return Store.initialize(HttpStatus.OK, "Plz log in");
         }
 
         repo.save(user.setPassword(ENCODER.encode(user.getPassword())));

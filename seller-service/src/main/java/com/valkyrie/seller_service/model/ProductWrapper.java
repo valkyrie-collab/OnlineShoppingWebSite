@@ -1,12 +1,14 @@
 package com.valkyrie.seller_service.model;
 
+import java.util.List;
+
 public class ProductWrapper {
+    private String id;
     private String name;
     private String description;
     private String category;
     private int price;
     private String brand;
-    private Image image;
     private int quantity;
     private String color;
     private int size;
@@ -16,6 +18,9 @@ public class ProductWrapper {
     private String searchKeyword;
     private int rating;
     private String shippingInformation;
+    private List<ImageDTO> images;
+
+    public String getId() {return id;}
 
     public String getName() {return name;}
 
@@ -27,7 +32,7 @@ public class ProductWrapper {
 
     public String getBrand() {return brand;}
 
-    public Image getImage() {return image;}
+    public List<ImageDTO> getImage() {return images;}
 
     public int getQuantity() {return quantity;}
 
@@ -47,6 +52,10 @@ public class ProductWrapper {
 
     public String getShippingInformation() {return shippingInformation;}
 
+    public ProductWrapper setId(String id) {
+        this.id = id;
+        return this;
+    }
 
     public ProductWrapper setName(String name) {
         this.name = name;
@@ -73,8 +82,8 @@ public class ProductWrapper {
         return this;
     }
 
-    public ProductWrapper setImage(Image image) {
-        this.image = image;
+    public ProductWrapper setImage(List<ImageDTO> images) {
+        this.images = images;
         return this;
     }
 

@@ -1,15 +1,15 @@
 package com.valkyrie.seller_service.service;
 
 import com.valkyrie.seller_service.config.TokenConfig;
-import com.valkyrie.seller_service.model.Image;
-import com.valkyrie.seller_service.model.Seller;
-import com.valkyrie.seller_service.model.SellerWrapper;
+import com.valkyrie.seller_service.feign.ProductFeignController;
+import com.valkyrie.seller_service.model.*;
 import com.valkyrie.seller_service.repository.SellerRepo;
-import com.valkyrie.seller_service.model.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class SellerService {
@@ -21,6 +21,11 @@ public class SellerService {
     @Autowired
     private void setConfig(TokenConfig config) {this.config = config;}
 
+    private ProductFeignController feign;
+    @Autowired
+    private void setFeign(ProductFeignController feign) {this.feign = feign;}
+
+    @Transactional
     public Store<String> save(String operation, String token, Seller seller) {
         boolean check = operation.equals("save");
         String username = config.getUsername(token);
@@ -53,13 +58,19 @@ public class SellerService {
             seller = repo.findById(username).orElse(null);
 
             if (seller != null) {
+                List<ProductWrapper> products = feign.findProductBySellerId(username).getBody();
+                Image image = seller.getImage(); Documents documents = seller.getDocuments();
+                DocumentDTO documentDTO = new DocumentDTO().setName(documents.getName())
+                        .setType(documents.getType()).setEncodedByteData(documents.getData());
+                ImageDTO imageDTO = new ImageDTO().setName(image.getName())
+                        .setType(image.getType()).setEncodedByteData(image.getData());
                 wrapper = new SellerWrapper().setId(seller.getId()).setAddress(seller.getAddress())
                         .setEmail(seller.getEmail()).setBusiness(seller.getBusiness())
                         .setGstNumber(seller.getGstNumber()).setBankAccountDetails(seller.getBankAccountDetails())
-                        .setDocuments(seller.getDocuments()).setPhoneNumber(seller.getPhoneNumber())
+                        .setDocuments(documentDTO).setPhoneNumber(seller.getPhoneNumber())
                         .setName(seller.getName()).setDescription(seller.getDescription())
-                        .setImage(seller.getImage()).setStatus(seller.getStatus()).setRating(seller.getRating())
-                        .setRegistrationDate(seller.getRegistrationDate()).setProductList(null);
+                        .setImage(imageDTO).setStatus(seller.getStatus()).setRating(seller.getRating())
+                        .setRegistrationDate(seller.getRegistrationDate()).setProductList(products);
 
                 return Store.initialize(HttpStatus.OK, wrapper);
             }

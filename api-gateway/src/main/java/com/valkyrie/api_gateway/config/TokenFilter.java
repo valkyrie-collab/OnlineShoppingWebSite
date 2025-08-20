@@ -34,12 +34,12 @@ public class TokenFilter extends OncePerRequestFilter {
         String authenticationHeader = request.getHeader("Authorization");
         String username = null, token = null;
 
-        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer")) {
+        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")) {
             token = authenticationHeader.substring(7);
             username = config.getUsername(token);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(username);
 
             if (config.isValid(token, userDetails)) {

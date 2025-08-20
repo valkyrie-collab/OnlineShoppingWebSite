@@ -14,8 +14,6 @@ public class Product {
     private String category;
     private int price;
     private String brand;
-    @Embedded
-    private Image image;
     private int quantity;
     private String color;
     private int size;
@@ -27,6 +25,8 @@ public class Product {
     private String shippingInformation;
 //    @ElementCollection
     private String sellerId;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Image> images;
 
 
     public String getId() {return id;}
@@ -41,7 +41,7 @@ public class Product {
 
     public String getBrand() {return brand;}
 
-    public Image getImage() {return image;}
+    public List<Image> getImages() {return images;}
 
     public int getQuantity() {return quantity;}
 
@@ -61,7 +61,7 @@ public class Product {
 
     public String getShippingInformation() {return shippingInformation;}
 
-    public String getSellerIds() {return sellerId;}
+    public String getSellerId() {return sellerId;}
 
     public Product setId(String id) {
         this.id = id;
@@ -93,8 +93,8 @@ public class Product {
         return this;
     }
 
-    public Product setImage(Image image) {
-        this.image = image;
+    public Product setImages(List<Image> images) {
+        this.images = images;
         return this;
     }
 
@@ -143,7 +143,7 @@ public class Product {
         return this;
     }
 
-    public Product setSellerIds(String sellerId) {
+    public Product setSellerId(String sellerId) {
         this.sellerId = sellerId;
         return this;
     }
@@ -152,6 +152,6 @@ public class Product {
     public String toString() {
         return id + name + description + category + price +
                 brand + quantity + color + size + variant + discount +
-                status + searchKeyword + rating + shippingInformation + sellerId;
+                status + searchKeyword + rating + shippingInformation;
     }
 }

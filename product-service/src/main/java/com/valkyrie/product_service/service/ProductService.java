@@ -1,8 +1,7 @@
 package com.valkyrie.product_service.service;
 
-import com.valkyrie.product_service.model.Product;
-import com.valkyrie.product_service.model.ProductWrapper;
-import com.valkyrie.product_service.model.Store;
+import com.valkyrie.product_service.config.TokenConfig;
+import com.valkyrie.product_service.model.*;
 import com.valkyrie.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,28 +19,49 @@ public class ProductService {
     @Autowired
     private void setRepo(ProductRepository repo) {this.repo = repo;}
 
+    private TokenConfig config;
+    @Autowired
+    private void setConfig(TokenConfig config) {this.config = config;}
+
     private ProductWrapper getProductWrapper(Product product) {
+        List<Image> productImages = product.getImages();
+        List<ImageDTO> images = new ArrayList<>();
+
+        for (Image productImage : productImages) {
+            images.add(new ImageDTO().setName(productImage.getName())
+                    .setType(productImage.getType()).setEncodedByteData(productImage.getData()));
+
+        }
+
         return new ProductWrapper().setBrand(product.getBrand())
                 .setCategory(product.getCategory()).setColor(product.getColor())
                 .setDescription(product.getDescription()).setDiscount(product.getDiscount())
-                .setImage(product.getImage()).setName(product.getName()).setPrice(product.getPrice())
+                .setImage(images).setName(product.getName()).setPrice(product.getPrice())
                 .setQuantity(product.getQuantity()).setRating(product.getRating()).setSize(product.getSize())
                 .setVariant(product.getVariant()).setSearchKeyword(product.getSearchKeyword())
                 .setStatus(product.getStatus()).setShippingInformation(product.getShippingInformation());
     }
 
-    public Store<String> save(String operation, Product product) {
+    @Transactional
+    public Store<String> save(String operation, Product product, List<Image> images, String token) {
         boolean check = operation.equals("save");
+        product = product.setSellerId(config.getUsername(token));
 
         if (check) {
             String uuid = UUID.randomUUID().toString();
-            repo.save(product.setId(uuid));
+            product = product.setId(uuid);
+
+            for (Image image : images) {image.setProduct(product);}
+
+            repo.save(product.setImages(images));
 
             return Store.initialize(HttpStatus.ACCEPTED,
                     "The product " + product.getName() + " saved with id = " + uuid);
         } else {
+            Product presentProduct = repo.findById(product.getId()).orElse(product);
+            product.setImages(presentProduct.getImages());
 
-            if (!product.toString().equals(repo.findById(product.getId()).orElse(product).toString())) {
+            if (!product.toString().equals(presentProduct.toString())) {
                 repo.save(product);
 
                 return Store.initialize(HttpStatus.ACCEPTED,
@@ -68,14 +88,18 @@ public class ProductService {
     }
 
     @Transactional
-    public Store<List<ProductWrapper>> findProductBySellerId(String sellerId) {
+    public Store<List<ProductWrapper>> findProductBySellerId(String token) {
+        String sellerId = config.getUsername(token);
         List<Product> products = repo.findAllBySellerId(sellerId);
         List<ProductWrapper> wrappers = new LinkedList<>();
 
         if (products == null || products.isEmpty()) {return Store.initialize(HttpStatus.NOT_FOUND, wrappers);}
 
+        System.out.println("hello");
         for (Product product : products) {
+            System.out.println("hello2");
             wrappers.add(getProductWrapper(product));
+            System.out.println("hello3");
         }
 
         return Store.initialize(HttpStatus.OK, wrappers);

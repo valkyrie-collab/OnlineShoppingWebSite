@@ -1,4 +1,4 @@
-package com.valkyrie.product_service.model;
+package com.valkyrie.order_service.model;
 
 import java.util.List;
 

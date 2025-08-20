@@ -1,5 +1,7 @@
 package com.valkyrie.product_service.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.valkyrie.product_service.model.Image;
 import com.valkyrie.product_service.model.Product;
 import com.valkyrie.product_service.model.ProductWrapper;
 import com.valkyrie.product_service.model.Store;
@@ -7,7 +9,10 @@ import com.valkyrie.product_service.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,15 +23,27 @@ public class ProductController {
     private void setService(ProductService service) {this.service = service;}
 
     @PostMapping("/save-product")
-    public ResponseEntity<String> save(@RequestBody Product product) {
-        Store<String> store = service.save("save", product);
+    public ResponseEntity<String> save(@RequestPart List<MultipartFile> imageFiles,
+                                       @RequestParam String productString,
+                                       @RequestParam String token) throws IOException {
+        Product product = new ObjectMapper().readValue(productString, Product.class);
+        List<Image> imageList = new ArrayList<>();
+
+        for (MultipartFile imageFile: imageFiles) {
+            Image image = new Image().setName(imageFile.getOriginalFilename())
+                    .setType(imageFile.getContentType()).setData(imageFile.getBytes());
+            imageList.add(image);
+        }
+        Store<String> store = service.save("save", product, imageList, token);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
     }
 
     @PostMapping("/update-product")
-    public ResponseEntity<String> update(@RequestBody Product product) {
-        Store<String> store = service.save("update", product);
+    public ResponseEntity<String> update(@RequestParam String productString,
+                                         @RequestParam String token) throws IOException {
+        Product product = new ObjectMapper().readValue(productString, Product.class);
+        Store<String> store = service.save("update", product, null, token);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
     }
@@ -39,8 +56,8 @@ public class ProductController {
     }
 
     @GetMapping("/find-products-by-seller-id")
-    public ResponseEntity<List<ProductWrapper>> findProductBySellerId(@RequestParam String sellerId) {
-        Store<List<ProductWrapper>> store = service.findProductBySellerId(sellerId);
+    public ResponseEntity<List<ProductWrapper>> findProductBySellerId(@RequestParam String token) {
+        Store<List<ProductWrapper>> store = service.findProductBySellerId(token);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
     }

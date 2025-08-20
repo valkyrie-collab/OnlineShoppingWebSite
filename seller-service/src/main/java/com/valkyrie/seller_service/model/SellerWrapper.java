@@ -12,11 +12,11 @@ public class SellerWrapper {
     private String business;
     private String gstNumber;
     private Date registrationDate;
-    private Image image;
+    private ImageDTO image;
     private String bankAccountDetails;
     private String status;
     private int rating;
-    private Documents documents;
+    private DocumentDTO documents;
     private String description;
     private List<ProductWrapper> productList;
 
@@ -42,9 +42,9 @@ public class SellerWrapper {
 
     public long getPhoneNumber() {return phoneNumber;}
 
-    public Image getImage() {return image;}
+    public ImageDTO getImage() {return image;}
 
-    public Documents getDocuments() {return documents;}
+    public DocumentDTO getDocuments() {return documents;}
 
     public Date getRegistrationDate() {return registrationDate;}
 
@@ -90,7 +90,7 @@ public class SellerWrapper {
         return this;
     }
 
-    public SellerWrapper setImage(Image image) {
+    public SellerWrapper setImage(ImageDTO image) {
         this.image = image;
         return this;
     }
@@ -110,7 +110,7 @@ public class SellerWrapper {
         return this;
     }
 
-    public SellerWrapper setDocuments(Documents documents) {
+    public SellerWrapper setDocuments(DocumentDTO documents) {
         this.documents = documents;
         return this;
     }

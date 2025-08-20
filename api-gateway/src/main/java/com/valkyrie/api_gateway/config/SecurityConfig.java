@@ -26,8 +26,8 @@ public class SecurityConfig {
     @Autowired
     private void setService(CustomUserDetailsService service) {this.service = service;}
 
-    @Bean
-    public BCryptPasswordEncoder encoder() {return new BCryptPasswordEncoder(12);}
+//    @Bean
+//    public BCryptPasswordEncoder encoder() {return new BCryptPasswordEncoder(12);}
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Throwable {

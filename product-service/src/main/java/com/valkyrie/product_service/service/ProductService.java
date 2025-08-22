@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -33,7 +30,7 @@ public class ProductService {
 
         }
 
-        return new ProductWrapper().setBrand(product.getBrand())
+        return new ProductWrapper().setBrand(product.getBrand()).setId(product.getId())
                 .setCategory(product.getCategory()).setColor(product.getColor())
                 .setDescription(product.getDescription()).setDiscount(product.getDiscount())
                 .setImage(images).setName(product.getName()).setPrice(product.getPrice())
@@ -73,6 +70,20 @@ public class ProductService {
 
         }
 
+    }
+
+    @Transactional
+    public Store<String> updateQuantity(int quantity, String productId) {
+//        String username = config.getUsername(token);
+        Integer presentQuantity = repo.findProductQuantityById(productId);
+//        System.out.println(presentQuantity);
+
+        if (presentQuantity == null || presentQuantity <= quantity) {return Store.initialize(HttpStatus.BAD_REQUEST,
+                "Product is not present....");}
+
+        repo.updateProductQuantity(productId, presentQuantity - quantity);
+
+        return Store.initialize(HttpStatus.ACCEPTED, "The Quantity of the Product has been updated....");
     }
 
     @Transactional
@@ -148,6 +159,7 @@ public class ProductService {
     }
 
     public Store<String> deleteProductById(String id) {
+        id = new String(Base64.getDecoder().decode(id));
 
         if (repo.findById(id).orElse(null) == null) {
             return Store.initialize(HttpStatus.OK,
@@ -162,6 +174,7 @@ public class ProductService {
 
     @Transactional
     public Store<String> deleteProductsBySellerId(String sellerId) {
+        sellerId = new String(Base64.getDecoder().decode(sellerId));
 
         if (repo.findAllBySellerId(sellerId).isEmpty()) {
             return Store.initialize(HttpStatus.OK,

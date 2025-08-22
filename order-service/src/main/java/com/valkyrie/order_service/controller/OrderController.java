@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -42,6 +43,7 @@ public class OrderController {
 
     @DeleteMapping("/cancel-order")
     public ResponseEntity<String> cancelOrder(@RequestParam String id) {
+        id = Base64.getEncoder().encodeToString(id.getBytes());
         Store<String> store = service.deleteOrderById(id);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());

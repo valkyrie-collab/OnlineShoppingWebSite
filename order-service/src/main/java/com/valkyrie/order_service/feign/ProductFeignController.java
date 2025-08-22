@@ -18,4 +18,8 @@ public interface ProductFeignController {
     @PostMapping("/product/update-product")
     ResponseEntity<String> update(@RequestParam String productString,
                                          @RequestParam String token) throws IOException;
+
+    @PostMapping("/product/update_quantity")
+    ResponseEntity<String> updateQuantity(@RequestParam int quantity,
+                                                 @RequestParam String productId);
 }

@@ -12,12 +12,12 @@ public class SellerWrapper {
     private String business;
     private String gstNumber;
     private Date registrationDate;
-    private ImageDTO image;
     private String bankAccountDetails;
     private String status;
     private int rating;
-    private DocumentDTO documents;
     private String description;
+    private ImageDTO image;
+    private DocumentDTO documents;
     private List<ProductWrapper> productList;
 
     public String getId() {return id;}

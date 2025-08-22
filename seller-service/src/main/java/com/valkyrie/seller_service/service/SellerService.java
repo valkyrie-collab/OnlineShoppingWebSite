@@ -58,7 +58,7 @@ public class SellerService {
             seller = repo.findById(username).orElse(null);
 
             if (seller != null) {
-                List<ProductWrapper> products = feign.findProductBySellerId(username).getBody();
+                List<ProductWrapper> products = feign.findProductBySellerId(token).getBody();
                 Image image = seller.getImage(); Documents documents = seller.getDocuments();
                 DocumentDTO documentDTO = new DocumentDTO().setName(documents.getName())
                         .setType(documents.getType()).setEncodedByteData(documents.getData());
@@ -94,6 +94,7 @@ public class SellerService {
                     "The Seller with username = " + username + " has already been delete or not present");
         }
 
+        feign.removeProductBySellerId(username);
         repo.deleteById(username);
 
         return Store.initialize(HttpStatus.OK,

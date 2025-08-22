@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,34 +40,15 @@ public class OrderService {
 
         if (check) {
             String uuid = UUID.randomUUID().toString();
+
+            if (!feign.updateQuantity(order.getQuantity(), order.getProductId())
+                    .getStatusCode().equals(HttpStatusCode.valueOf(202))) {
+                return Store.initialize(HttpStatus.OK, "Product update error...");
+            }
+
             ProductWrapper wrapper = feign.findProductById(order.getProductId()).getBody();
 
             if (wrapper == null) {return Store.initialize(HttpStatus.BAD_REQUEST, "product empty...");}
-
-            try {
-                if (!feign.update(
-                        "{\"id\":" + wrapper.getId() +
-                                ",\"name\":" + wrapper.getName() +
-                                ",\"description\":" + wrapper.getDescription() +
-                                ",\"category\":" + wrapper.getCategory() +
-                                ",\"price\":" + wrapper.getPrice() +
-                                ",\"brand\":" + wrapper.getBrand() +
-                                ",\"quantity\":" + (wrapper.getQuantity() - order.getQuantity()) +
-                                ",\"color\":" + wrapper.getColor() +
-                                ",\"size\":" + wrapper.getSize() +
-                                ",\"variant\":" + wrapper.getVariant() +
-                                ",\"discount\":" + wrapper.getDiscount() +
-                                ",\"status\":" + wrapper.getStatus() +
-                                ",\"searchKeyword\":" + wrapper.getSearchKeyword() +
-                                ",\"rating\":" + wrapper.getRating() +
-                                ",\"shippingInformation\":" + wrapper.getShippingInformation() +
-                                "}", token //",\"sellerId\":" + wrapper.getS +
-                ).getStatusCode().equals(HttpStatusCode.valueOf(202))) {
-                    return Store.initialize(HttpStatus.OK, "Product update error...");
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
 
             repo.save(order.setId(uuid));
             return Store.initialize(HttpStatus.OK,
@@ -93,7 +75,7 @@ public class OrderService {
         if (orders.isEmpty()) {return Store.initialize(HttpStatus.BAD_REQUEST, new ArrayList<>());}
 
         for (Order order : orders) {
-            ProductWrapper product = feign.findProductById(order.getId()).getBody();
+            ProductWrapper product = feign.findProductById(order.getProductId()).getBody();
 
             if (product == null) {return Store.initialize(HttpStatus.BAD_REQUEST, new ArrayList<>());}
 
@@ -105,11 +87,18 @@ public class OrderService {
         return Store.initialize(HttpStatus.OK, wrappers);
     }
 
+    @Transactional
     public Store<String> deleteOrderById(String id) {
         id = new String(Base64.getDecoder().decode(id));
+        Order presentOrder = repo.findById(id).orElse(null);
 
-        if (repo.findById(id).orElse(null) == null) {
+        if (presentOrder == null) {
             return Store.initialize(HttpStatus.OK, "The Order is Already canceled....");
+        }
+
+        if (!feign.updateQuantity((-presentOrder.getQuantity()), presentOrder.getProductId())
+                .getStatusCode().equals(HttpStatusCode.valueOf(202))) {
+            return Store.initialize(HttpStatus.OK, "Product update error...");
         }
 
         repo.deleteById(id);

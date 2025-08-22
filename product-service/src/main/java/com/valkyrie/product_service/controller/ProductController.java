@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -48,6 +49,14 @@ public class ProductController {
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
     }
 
+    @PostMapping("/update_quantity")
+    public ResponseEntity<String> updateQuantity(@RequestParam int quantity,
+                                                 @RequestParam String productId) {
+        Store<String> store = service.updateQuantity(quantity, productId);
+
+        return ResponseEntity.status(store.getStatus()).body(store.getInstance());
+    }
+
     @GetMapping("/find-product-by-id")
     public ResponseEntity<ProductWrapper> findProductById(@RequestParam String id) {
         Store<ProductWrapper> store = service.findProductById(id);
@@ -78,6 +87,7 @@ public class ProductController {
 
     @DeleteMapping("/delete-product-by-id")
     public ResponseEntity<String> removeProductById(@RequestParam String id) {
+        id = Base64.getEncoder().encodeToString(id.getBytes());
         Store<String> store = service.deleteProductById(id);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
@@ -85,6 +95,7 @@ public class ProductController {
 
     @DeleteMapping("/delete-products-by-seller-id")
     public ResponseEntity<String> removeProductBySellerId(@RequestParam String sellerId) {
+        sellerId = Base64.getEncoder().encodeToString(sellerId.getBytes());
         Store<String> store = service.deleteProductsBySellerId(sellerId);
 
         return ResponseEntity.status(store.getStatus()).body(store.getInstance());
